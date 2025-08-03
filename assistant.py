@@ -18,7 +18,10 @@ whisper_model = whisper.load_model("base")
 
 # --- MongoDB Client ---
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client[os.getenv("MONGO_DB")]
+mongo_db = os.getenv("MONGO_DB")
+if mongo_db is None:
+    raise ValueError("MONGO_DB environment variable is not set")
+db = client[mongo_db]
 
 # --- Recipe Data Class ---
 class Recipe(BaseModel):
@@ -142,7 +145,10 @@ async def restaurant_agent(user_text: str, inventory: Dict[str, int], is_audio: 
 # --- Audio Handler ---
 def transcribe_audio(file_path: str) -> str:
     result = whisper_model.transcribe(file_path)
-    return result["text"]
+    text = result.get("text")
+    if not isinstance(text, str):
+        raise TypeError(f"Unexpected return type for result['text']: {type(text)}")
+    return text
 
 # --- Entry Point ---
 async def assistant_query(input_data: str, inventory: Dict[str, int], recipe_db_input: Dict[str, Recipe], is_audio=False):

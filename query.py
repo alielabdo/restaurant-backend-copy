@@ -6,9 +6,9 @@ import os
 
 def fetch_inventory_from_db():
     load_dotenv()
-    uri = os.getenv("MONGO_URI")
-    db_name = os.getenv("MONGO_DB")
-    collection_name = os.getenv("MONGO_COLLECTION")
+    uri = os.getenv("MONGO_URI") or ""
+    db_name = os.getenv("MONGO_DB") or ""
+    collection_name = os.getenv("MONGO_COLLECTION") or ""
 
     client = MongoClient(uri)
     collection = client[db_name][collection_name]
